@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Upload csv</title>
+     <meta charset="UTF-8">
+
+    <link rel="stylesheet"
+     href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css"/>
+
+    <link rel="stylesheet"
+     href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/basic.min.css"/>
+
+    <script type="application/javascript"
+     src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.js">
+    </script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script type="application/javascript">
+    Dropzone.options.dropper = {
+        paramName: 'file',
+        chunking: false,
+        forceChunking: false,
+        url: '/upload',
+        maxFilesize: 1025, // megabytes
+        chunkSize: 1000000 // bytes
+    }
+    var source = new EventSource("/send");
+
+    let $streaContainer = document.getElementById('stream')
+
+     function EventSystemOpen(e) {
+        <!--console.log("EventSystemOpen", e);-->
+    }
+
+    function EventSystemError(e) {
+        <!--console.log("EventSystemOpen", e);-->
+    }
+
+    function GotServerEventMessage(e) {
+        <!--console.log("GotServerEventMessage", e);-->
+    }
+
+    source.addEventListener('open', EventSystemOpen, false);
+    source.addEventListener('error', EventSystemError, false);
+    source.addEventListener('message', GotServerEventMessage, false);
+
+</script>
+
+
+<body>
+
+<form method="POST" action='/product_upload' class="dropzone dz-clickable"
+      id="dropper" enctype="multipart/form-data">
+</form>
+
+	<h1 style="color: green">
+	</h1>
+
+	<table id="producst">
+		<thead>
+			<tr>
+				<th>List of Products </th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+                <th>Product Name</th>
+                <th>Product SKU</th>
+                <th>Product Description</th>
+                <th>Active ?</th>
+        </tr>
+		</tbody>
+	</table>
+
+	<!-- Script to add table row -->
+	<script>
+	var source = new EventSource("/send");
+    source.onmessage = function (event) {
+        var data = (event.data);
+        var obj = JSON.parse(data);
+		markup = "<tr> <td> " + obj.product_name+"</td><td> " + obj.product_sku+"</td>" + "<td> " + obj.product_description+" </td>  <td> " + obj.product_is_active+"</td> </tr>";
+		tableBody = $("table tbody");
+		tableBody.append(markup);
+		};
+	</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+     href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css"/>
+    <link rel="stylesheet"
+     href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/basic.min.css"/>
+    <script type="application/javascript"
+     src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.js">
+    </script>
+    <title>File Dropper</title>
+</head>
+<body>
+
+<form method="POST" action='/product_upload' class="dropzone dz-clickable"
+      id="dropper" enctype="multipart/form-data">
+</form>
+
+<div id="stream">
+    <p>Following products are being processed</p>
+
+    <table style="width:100%">
+        <tr>
+            <th>Name</th>
+            <th>SKU</th>
+            <th>Description</th>
+        </tr>
+    </table>
+</div>
+
+<script type="application/javascript">
+    Dropzone.options.dropper = {
+        paramName: 'file',
+        chunking: false,
+        forceChunking: false,
+        url: '/upload',
+        maxFilesize: 1025, // megabytes
+        chunkSize: 1000000 // bytes
+    }
+    var source = new EventSource("/send");
+    let $streaContainer = document.getElementById('stream')
+    source.onmessage = function (event) {
+        var data = (event.data);
+
+        var obj = JSON.parse(data);
+        console.log(obj)
+        debugger;
+
+        $streaContainer.innerHTML += `<p> <tr>
+
+        <td>${obj.product_name} </td>
+        <td> ${obj.product_sku}</td>
+        <td> ${obj.product_description}</td>
+        <td> ${obj.product_is_active}</td>
+
+        </tr> </p>`
+    }
+     function EventSystemOpen(e) {
+        console.log("EventSystemOpen", e);
+    }
+    function EventSystemError(e) {
+        console.log("EventSystemOpen", e);
+    }
+    function GotServerEventMessage(e) {
+        console.log("GotServerEventMessage", e);
+    }
+    source.addEventListener('open', EventSystemOpen, false);
+    source.addEventListener('error', EventSystemError, false);
+    source.addEventListener('message', GotServerEventMessage, false);
+
+</script>
+</body>
+</html>

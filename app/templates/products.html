@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>List Products</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+
+        <tr>
+
+            <td>{{ form.product_name.label }}
+            {{ form.product_name(size=20) }}
+            </td>
+
+             <td>{{ form.product_sku.label }}
+            {{ form.product_sku(size=20) }}
+             </td>
+
+            <td>{{ form.product_description.label }}
+            {{ form.product_description(size=40) }}
+            </td>
+
+            <td>{{ form.product_is_active.label }}
+            {{ form.product_is_active(size=2) }}
+            </td>
+
+        </tr>
+        <p>{{ form.create() }}</p>
+    </form>
+
+<body>
+	<link href="https://unpkg.com/tabulator-tables@4.5.3/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js"></script>
+    <!--<link href="/dist/css/materialize/tabulator_materialize.min.css" rel="stylesheet">-->
+
+
+		<div id="example-table"></div>
+		<script type="text/javascript">
+</script>
+	</body>
+
+<table id="product-table">
+    <thead>
+        <tr>
+            <th width="200">Product Name</th>
+            <th>Product SKU</th>
+            <th>Product description</th>
+            <th>Active?</th>
+        </tr>
+    </thead>
+
+    <tbody>
+       {% for p in products %}
+        <tr>
+            <td> {{ p.product_name }}b</td>
+            <td> {{ p.product_sku }}</td>
+            <td> {{ p.product_description }}</td>
+            <td>{{ p.product_is_active }}</td>
+            <td></td>
+        </tr>
+       {% endfor %}
+
+    </tbody>
+
+</table>
+<script type="text/javascript">
+	var table = new Tabulator("#product-table", {
+    tooltips:true,
+    height:"311px",
+    layout:"fitColumns",
+    pagination:"local",
+    paginationSize:6,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    columns:[
+    {title:"Product Name",field:"name", width:150, headerFilter:"input" ,sorter:"string", editor:true},
+    {title:"Product SKU",field:"sku", width:150, headerFilter:"input" ,sorter:"string"},
+    {title:"Product description",field:"description", headerFilter:"input", sorter:"string", formatter:"textarea"},
+    {title:"Active?", width:10,field:"active",headerFilter:"input", sorter:"boolean", formatter:"tickCross"},
+    ],
+});
+</script>
+
+{% endblock %}
